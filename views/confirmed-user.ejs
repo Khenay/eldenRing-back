@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  #recovery {
+    background: linear-gradient(90deg, #ffffff 0%, #0765a4 50%, #ffed30 100%);
+    padding: 2rem;
+    border-style: none;
+    border-radius: 1rem;
+    width: 25rem;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+
+  }
+
+  section {
+    height: 80vh;
+    background-color: #fafafa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  input {
+
+    text-align: center;
+    border-radius: .5rem;
+    border-style: none;
+    font-size: 1.5rem;
+    margin-bottom: .5rem;
+  }
+
+  button {
+
+    border-radius: 1rem;
+    border-style: none;
+    width: 7rem;
+    cursor: pointer;
+    margin: 0 auto;
+    padding: .5rem;
+    background-color: white;
+  }
+</style>
+
+<body>
+
+  <section>
+    <div id="recovery">
+      <h1>Cambia tu contraseña</h1>
+      <label for="pass">Introduce la nueva contraseña</label>
+      <br>
+
+      <input type="password" name="pass" id="pass">
+      <input type="password" name="pass2" id="pass2">
+
+      <div id="showPass">
+        <label id="checkText">Mostrar contraseñas</label>
+        <input type="checkbox" id="markPass" />
+      </div>
+
+      <button id="send">Enviar</button>
+    </div>
+
+  </section>
+
+  <script>
+
+    document.getElementById("markPass").addEventListener("click", function () {
+      const pass1 = document.getElementById("pass");
+      const pass2 = document.getElementById("pass2");
+      if (pass1.type === "password" && pass2.type === "password") {
+        pass1.type = "text";
+        pass2.type = "text";
+      } else {
+        pass1.type = "password";
+        pass2.type = "password";
+      }
+    })
+
+    document.getElementById("send").addEventListener("click", function () {
+
+
+      let pass = document.getElementById("pass").value;
+      let pass2 = document.getElementById("pass2").value;
+
+      if (pass == pass2) {
+
+
+        let paginaActual = window.location.pathname;
+
+        const data = {
+          pass: pass
+        };
+
+
+        localStorage.setItem(
+          "auth",
+          JSON.stringify({
+            status: true,
+          })
+        );
+
+
+        fetch(`${paginaActual}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        })
+
+        alert("Contraseña cambiada con éxito ")
+        location.href = "http://localhost:5000"
+      } else {
+        alert("Las contraseñas no coinciden")
+      }
+
+    })
+
+  </script>
+</body>
+
+</html>

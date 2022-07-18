@@ -1,0 +1,30 @@
+{
+  "name": "proyectoindividualprueba",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "leaflet": "^1.8.0",
+    "mongodb": "^4.7.0",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.7.7",
+    "nodemon": "^2.0.18",
+    "puppeteer": "^15.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-leaflet": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.7.11"
+  }
+}
