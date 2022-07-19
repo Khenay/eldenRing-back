@@ -70,33 +70,33 @@ const user = {
             if (err) throw err;
 
             if (rows[0].id != undefined) {
-               
-                        if (rows[0].pass != undefined) {
 
-                            if (rows[0].pass == functions.SHA1(req.body.pass)) {
-                               
+                if (rows[0].pass != undefined) {
 
-                                // res.json({
-                                //     name: result.nombre,
-                                //     class: result.clase
-                                // })
-                                res.json({
-                                    message: 'right',
-                                    nic: rows[0].nic,
-                                    build: rows[0].build
-                                });
-                            } else {
-                                res.json({
-                                    message: 'wrong'
-                                });
-                            }
-                        } else {
-                            res.json({
-                                message: 'wrong'
-                            });
-                        }
-                        // db.close();
-              
+                    if (rows[0].pass == functions.SHA1(req.body.pass)) {
+
+
+                        // res.json({
+                        //     name: result.nombre,
+                        //     class: result.clase
+                        // })
+                        res.json({
+                            message: 'right',
+                            nic: rows[0].nic,
+                            build: rows[0].build
+                        });
+                    } else {
+                        res.json({
+                            message: 'wrong'
+                        });
+                    }
+                } else {
+                    res.json({
+                        message: 'wrong'
+                    });
+                }
+                // db.close();
+
             } else {
                 res.json({
                     message: 'wrong'
@@ -154,13 +154,65 @@ const user = {
 
 
     },
+
+    legendaryWeapon: (req, resultado) => {
+
+
+
+
+        console.log('hola')
+
+
+        //contraseña encriptada
+        let query = `SELECT * from Usuarios WHERE nic = '${req.body.user}'`;
+        // let queryI = `SELECT id from Usuarios WHERE email = '${req.body.email}'`;
+
+
+        connection.query(query, async (err, rows) => {
+            if (err) throw err;
+
+            console.log(rows[0].id)
+            MongoClient.connect(url, function (err, db) {
+                if (err) throw err;
+                var dbo = db.db(mydb);
+
+                dbo.collection("ArmasLegendarias").findOne({ nombre: req.body.weapon }, async function (err, result) {
+                    if (err) throw err;
+                    ;
+                    console.log(result)
+                    const myobj = { "nombre": await result.nombre, "clase": await result.clase, "peso": await result.peso};
+
+                    const insertquery = `INSERT INTO ArmasLegendarias VALUES (null,'${myobj.nombre}','${myobj.clase}','${myobj.peso}',${rows[0].id})`;
+
+                    connection.query(insertquery, async (err, rows) => {
+                        if (err) throw err;
+            
+                        console.log("Documento insertado");
+                        resultado.json({
+                            message: 'Weapon acquired'
+                        })
+                        // db.close();
+                    });
+
+                    // db.close();
+                });
+            });
+            // db.close();
+        });
+
+
+
+
+
+
+    },
     profileWeapon: (req, resultado) => {
 
 
         let query = `SELECT * from Usuarios WHERE nic = '${req.body.user}'`;
 
 
-        console.log(req.body.user)
+        
         connection.query(query, async (err, rows) => {
             if (err) throw err;
 
@@ -172,7 +224,7 @@ const user = {
                 dbo.collection("ArmasColeccionadas").find({ usuario: rows[0].id }).toArray(function (err, result) {
                     if (err) throw err;
                     //res.send(result)
-                    console.log(result)
+                    
                     resultado.json({
                         datos: result
                     })
@@ -186,6 +238,36 @@ const user = {
         });
 
     },
+
+    profileWeaponL: (req, resultado) => {
+
+
+        let query1 = `SELECT * from Usuarios WHERE nic = '${req.body.user}'`;
+        
+
+
+        
+        connection.query(query1, async (err, rows1) => {
+            if (err) throw err;
+
+            
+
+            let query2 = `SELECT * from ArmasLegendarias WHERE fk_id_usuario = ${rows1[0].id}`;
+
+            connection.query(query2, async (err, rows2) => {
+                if (err) throw err;
+    
+                
+    
+                resultado.json({
+                    datos: rows2
+                })
+                // db.close();
+            });
+            // db.close();
+        });
+
+    },
     allWeapons: (req, resultado) => {
         MongoClient.connect(url, function (err, db) {
             if (err) throw err;
@@ -193,11 +275,19 @@ const user = {
 
             dbo.collection("Armas").find({}).toArray(function (err, result) {
                 if (err) throw err;
-                //res.send(result)
+                dbo.collection("ArmasLegendarias").find({}).toArray(function (err, resultL) {
+                    if (err) throw err;
+                    //res.send(result)
 
-                resultado.json({
-                    datos: result
-                })
+                    resultado.json({
+                        datos: result,
+                        datosL: resultL
+                    })
+
+                    //db.close();
+                });
+
+                
 
                 //db.close();
             });
@@ -205,10 +295,11 @@ const user = {
 
         });
 
+
     },
     change: (req, resultado) => {
 
-        for (let i = 1; i <= 36; i++) {
+        for (let i = 1; i <= 9; i++) {
 
 
             MongoClient.connect(url, function (err, db) {
@@ -220,7 +311,7 @@ const user = {
                 var myqueryX = { "id": i };
                 var newvaluesX = { $set: { "x": ranNumX } };
 
-                dbo.collection("Armas").updateOne(myqueryX, newvaluesX, function (err, res) {
+                dbo.collection("ArmasLegendarias").updateOne(myqueryX, newvaluesX, function (err, res) {
                     if (err) throw err;
                     console.log("Documento actualizado");
                     // db.close();
@@ -228,7 +319,7 @@ const user = {
             });
         }
 
-        for (let i = 1; i <= 36; i++) {
+        for (let i = 1; i <= 9; i++) {
 
 
             MongoClient.connect(url, function (err, db) {
@@ -240,7 +331,7 @@ const user = {
                 var myqueryY = { "id": i };
                 var newvaluesY = { $set: { "y": ranNumY } };
 
-                dbo.collection("Armas").updateOne(myqueryY, newvaluesY, function (err, res) {
+                dbo.collection("ArmasLegendarias").updateOne(myqueryY, newvaluesY, function (err, res) {
                     if (err) throw err;
                     console.log("Documento actualizado");
                     // db.close();

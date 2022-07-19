@@ -13,7 +13,7 @@ const url = "mongodb://localhost:27017/";
 const MongoClient = mongo.MongoClient;
 const mydb = "EldenRing";
 
-// weapon.coordenadas();
+// weapon.legendaryWeapons();
 
 // const myobj = { "nombre": weapon., "clase": weapon.clase, "peso": weapon.peso };
 

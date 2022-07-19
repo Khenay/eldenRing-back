@@ -107,55 +107,66 @@ async function busqueda() {
 
 };
 
-async function coordenadas() {
+async function legendaryWeapons() {
 
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
     });
 
-    const page = await browser.newPage();
+    for (let i = 1; i <= 9; i++) {
+        const page = await browser.newPage();
 
 
-    // Para ir a una página en concreto.
-    await page.goto("https://eldenring.wiki.fextralife.com/Interactive+Map");
+        // Para ir a una página en concreto.
+        await page.goto("https://eldenring.wiki.fextralife.com/Legendary+Armaments");
 
-    // Para hacer click al mensaje de cookies.
-    //   await page.click("#sp-cc-accept");
-    await page.waitForTimeout(1000);
-    //Acceder al buscador de amazon po su selector. ('Selector','Búsqueda').
-    await page.type("#searchtext9", "dark moon greatsword");
-
-    await page.click('#666');
-
-    await page.waitForTimeout(1000);
-
-    await page.click('#map > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-marker-pane > img');
+        // Para hacer click al mensaje de cookies.
+        //   await page.click("#sp-cc-accept");
+        await page.waitForTimeout(1000);
+        //Acceder al buscador de amazon po su selector. ('Selector','Búsqueda').
 
 
-    //Recogemos en un array el precio
-    const name = await page.$eval("#map > div.leaflet-control-container > div.leaflet-bottom.leaflet-center > div", (coord) => coord.innerText)
-        ;
+        await page.click(`#wiki-content-block > ol > li:nth-child(${i}) > a:nth-child(1)`);
 
 
-    // #code_block-102-2080
+        await page.waitForTimeout(3000);
 
-    // document.getElementById('nombre').innerText=name
-    console.log(name);
+       console.log(`iteración ${i}`)
+
+        //Recogemos en un array el precio
+        const name = await page.$eval("#infobox > div > table > tbody > tr:nth-child(1) > th > h2", (nombre) => nombre.innerText);
+
+        const clase = await page.$eval("#infobox > div > table > tbody > tr:nth-child(5) > td:nth-child(1) > a", (clase) => clase.innerText);
+
+        const weight = await page.$eval("#infobox > div > table > tbody > tr:nth-child(7) > td:nth-child(1) > span", (peso) => peso.innerText);
 
 
 
-    const myobj = { "nombre": datosArma.titulo, "clase": datosArma.clase, "peso": datosArma.peso };
+        // #code_block-102-2080
 
-    MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db(mydb);
+        // document.getElementById('nombre').innerText=name
+        console.log(name);
 
-        dbo.collection("Armas").insertOne(myobj, function (err, res) {
+        var datosArma = {
+            titulo: name,
+            clase: clase,
+            peso: weight
+        };
+
+        const myobj = { "nombre": datosArma.titulo, "clase": datosArma.clase, "peso": datosArma.peso };
+
+        MongoClient.connect(url, function (err, db) {
             if (err) throw err;
-            console.log("Documento insertado");
-            db.close();
+            var dbo = db.db(mydb);
+
+            dbo.collection("ArmasLegendarias").insertOne(myobj, function (err, res) {
+                if (err) throw err;
+                console.log("Documento insertado");
+                db.close();
+            });
         });
-    });
+
+    }
 
     await browser.close();
     // Si headless esta en true, se oculta e chromium
@@ -170,7 +181,7 @@ async function coordenadas() {
 
 const datosArma = {
     busqueda: busqueda,
-    coordenadas: coordenadas
+    legendaryWeapons: legendaryWeapons
 }
 
 module.exports = datosArma;

@@ -8,7 +8,9 @@ const passRecovery = require("../controllers/recovery.controllers");
 router.post("/login", user.login);
 router.post("/register",user.register);
 router.post("/weapon",user.weapon);
+router.post("/legendaryWeapon",user.legendaryWeapon);
 router.post("/profileWeapon",user.profileWeapon);
+router.post("/profileWeaponL",user.profileWeaponL);
 router.post("/allWeapons",user.allWeapons);
 router.post("/change",user.change);
 
