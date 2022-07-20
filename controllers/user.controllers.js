@@ -11,7 +11,26 @@ const url = "mongodb://localhost:27017/";
 const MongoClient = mongo.MongoClient;
 const mydb = "EldenRing";
 
+const sendMail = require("../email")
+
 const user = {
+
+    listaClases: (req, res) => {
+        MongoClient.connect(url, function (err, db) {
+            if (err) throw err;
+            var dbo = db.db(mydb);
+
+            dbo.collection("Clases").find({}).toArray(function (err, result) {
+                if (err) throw err;
+
+                res.json({
+                    data: result
+                })
+
+                // db.close();
+            });
+        });
+    },
 
     register: (req, res) => {
 
@@ -130,7 +149,7 @@ const user = {
 
                 dbo.collection("Armas").findOne({ nombre: req.body.weapon }, async function (err, result) {
                     if (err) throw err;
-                    ;
+
                     console.log(result)
                     const myobj = { "nombre": await result.nombre, "clase": await result.clase, "peso": await result.peso, "usuario": await rows[0].id };
 
@@ -180,13 +199,13 @@ const user = {
                     if (err) throw err;
                     ;
                     console.log(result)
-                    const myobj = { "nombre": await result.nombre, "clase": await result.clase, "peso": await result.peso};
+                    const myobj = { "nombre": await result.nombre, "clase": await result.clase, "peso": await result.peso };
 
                     const insertquery = `INSERT INTO ArmasLegendarias VALUES (null,'${myobj.nombre}','${myobj.clase}','${myobj.peso}',${rows[0].id})`;
 
                     connection.query(insertquery, async (err, rows) => {
                         if (err) throw err;
-            
+
                         console.log("Documento insertado");
                         resultado.json({
                             message: 'Weapon acquired'
@@ -212,7 +231,7 @@ const user = {
         let query = `SELECT * from Usuarios WHERE nic = '${req.body.user}'`;
 
 
-        
+
         connection.query(query, async (err, rows) => {
             if (err) throw err;
 
@@ -224,7 +243,7 @@ const user = {
                 dbo.collection("ArmasColeccionadas").find({ usuario: rows[0].id }).toArray(function (err, result) {
                     if (err) throw err;
                     //res.send(result)
-                    
+
                     resultado.json({
                         datos: result
                     })
@@ -243,22 +262,22 @@ const user = {
 
 
         let query1 = `SELECT * from Usuarios WHERE nic = '${req.body.user}'`;
-        
 
 
-        
+
+
         connection.query(query1, async (err, rows1) => {
             if (err) throw err;
 
-            
+
 
             let query2 = `SELECT * from ArmasLegendarias WHERE fk_id_usuario = ${rows1[0].id}`;
 
             connection.query(query2, async (err, rows2) => {
                 if (err) throw err;
-    
-                
-    
+
+
+
                 resultado.json({
                     datos: rows2
                 })
@@ -287,7 +306,7 @@ const user = {
                     //db.close();
                 });
 
-                
+
 
                 //db.close();
             });
@@ -345,7 +364,39 @@ const user = {
 
 
 
+    },
+    contact: (req, resultado) => {
+
+        if (req.body.email) {
+            let emailUser = req.body.email
+
+            sendMail("gottskalkraud@gmail.com", "gottskalkraud@gmail.com", "Suggestions", `From: ${emailUser} \n
+            ${req.body.text}`)
+            resultado.json({
+                message: 'Thank you for your input!'
+            })
+        }
+        if (req.body.nic) {
+            let nic = req.body.nic
+
+            let queryE = `SELECT email from Usuarios WHERE nic = '${nic}' `;
+
+            connection.query(queryE, async (err, rowsE) => {
+                if (err) throw err;
+
+                sendMail("gottskalkraud@gmail.com", "gottskalkraud@gmail.com", "Suggestions", `From: ${rowsE[0].email} \n
+                ${req.body.text}`)
+
+                resultado.json({
+                    message: 'Thank you for your input!'
+                })
+            });
+
+        }
+
+
     }
+
     // profile: (req, res) => {
 
 

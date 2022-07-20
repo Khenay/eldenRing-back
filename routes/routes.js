@@ -6,6 +6,7 @@ const passRecovery = require("../controllers/recovery.controllers");
 
 // router.get("/",user.home)
 router.post("/login", user.login);
+router.post("/listaClases",user.listaClases);
 router.post("/register",user.register);
 router.post("/weapon",user.weapon);
 router.post("/legendaryWeapon",user.legendaryWeapon);
@@ -13,6 +14,7 @@ router.post("/profileWeapon",user.profileWeapon);
 router.post("/profileWeaponL",user.profileWeaponL);
 router.post("/allWeapons",user.allWeapons);
 router.post("/change",user.change);
+router.post("/contact",user.contact);
 
 router.post("/recovery", passRecovery.confirmedUser);
 router.get("/recoveryReset/:email/:token", passRecovery.confirmUserGet);
